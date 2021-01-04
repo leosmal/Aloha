@@ -9,14 +9,14 @@ import java.util.List;
 
 public class Solution {
 	Directory rootDirectory = null;
-	Directory currentDirectory = null; 
-	
-	void Solution() {
-		//creating base diractory
+	Directory currentDirectory = null;
+
+	public Solution() {
+		// creating base diractory
 		rootDirectory = new Directory();
 		currentDirectory = rootDirectory;
 	}
-	
+
 	public static void main(String[] args) {
 		List<Command> commands = new ArrayList<Command>();
 		Solution assesment = new Solution();
@@ -53,7 +53,7 @@ public class Solution {
 	private static Command validateCommand(String promptCommand,
 			List<Command> commandList) {
 		String[] parts = promptCommand.split(" ");
-		
+
 		for (Command command : commandList) {
 			if (command.getCommandName().equals(parts[0]))
 				return command;
@@ -68,8 +68,17 @@ public class Solution {
 	private static boolean validateParameter(String promptCommand,
 			Command currentCommand) {
 		String[] parts = promptCommand.split(" ");
-		if (currentCommand.getArguments().size() == parts.length - 1)
+		if (currentCommand.getArguments().size() == parts.length - 1) {
+			List <String> arguments = new ArrayList<>();
+			//Omitting index 0 since its the command
+			for (int i = 1; i < parts.length; i++) {
+				arguments.add(parts[i]);
+			}
+			//replacing template arguments with actual ones
+			currentCommand.setArguments(arguments);
 			return true;
+		}
+			
 		return false;
 	}
 
@@ -123,7 +132,7 @@ public class Solution {
 		private List<String> arguments;
 
 		public abstract void execute();
-
+		
 		public String getCommandName() {
 			return commandName;
 		}
@@ -139,10 +148,11 @@ public class Solution {
 		public void setArguments(List<String> arguments) {
 			this.arguments = arguments;
 		}
-
+		
 	}
 
 	class mkdirCommand extends Command {
+		
 		public void execute() {
 			Directory newDirectory = new Directory();
 			newDirectory.setName(getArguments().get(0));
@@ -156,29 +166,34 @@ public class Solution {
 	}
 
 	class quitCommand extends Command {
+
 		public void execute() {
 			System.out.println("Exiting");
 			System.exit(0);
 		}
 	}
-	
+
 	class Directory {
 		String name;
 		List<Directory> subDirs;
 		List<File> files;
-		
+
 		public List<Directory> getSubDirs() {
 			return subDirs;
 		}
+
 		public void setSubDirs(List<Directory> subDirs) {
 			this.subDirs = subDirs;
 		}
+
 		public List<File> getFiles() {
 			return files;
 		}
+
 		public void setFiles(List<File> files) {
 			this.files = files;
 		}
+
 		public String getName() {
 			return name;
 		}
@@ -186,9 +201,9 @@ public class Solution {
 		public void setName(String name) {
 			this.name = name;
 		}
-		
+
 	}
-	
+
 	class File {
 		String name;
 
@@ -199,7 +214,7 @@ public class Solution {
 		public void setName(String name) {
 			this.name = name;
 		}
-		
+
 	}
 
 }
