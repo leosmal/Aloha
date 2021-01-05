@@ -34,12 +34,12 @@ public class Solution {
 				if (currentCommand == null) {
 					System.out.println("Unrecognizad Command");
 					System.out.println("Enter command:");
-					break;
+					continue;
 				}
 				if (!validateParameter(promptCommand, currentCommand)) {
 					System.out.println("Unrecognizad parameters");
 					System.out.println("Enter command:");
-					break;
+					continue;
 				}
 				executeCommand(currentCommand);
 			}
