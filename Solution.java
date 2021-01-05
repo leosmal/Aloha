@@ -21,6 +21,7 @@ public class Solution {
 		List<Command> commands = new ArrayList<Command>();
 		Solution assesment = new Solution();
 		Command currentCommand = null;
+		CommandFactory commandFactory = assesment.new CommandFactory();
 		initializeCommands(assesment, commands);
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		try {
@@ -28,7 +29,8 @@ public class Solution {
 			for (String promptCommand = br.readLine(); promptCommand != null; promptCommand = br
 					.readLine()) {
 
-				currentCommand = validateCommand(promptCommand, commands);
+				currentCommand = validateCommand(promptCommand, commands,
+						commandFactory);
 				if (currentCommand == null) {
 					System.out.println("Unrecognizad Command");
 					System.out.println("Enter command:");
@@ -51,12 +53,12 @@ public class Solution {
 	 * Basic validation ,check the command is present
 	 */
 	private static Command validateCommand(String promptCommand,
-			List<Command> commandList) {
+			List<Command> commandList, CommandFactory factory) {
 		String[] parts = promptCommand.split(" ");
 
 		for (Command command : commandList) {
 			if (command.getCommandName().equals(parts[0]))
-				return command;
+				return factory.getCommand(command.getCommandName());
 		}
 		return null;
 	}
@@ -69,16 +71,16 @@ public class Solution {
 			Command currentCommand) {
 		String[] parts = promptCommand.split(" ");
 		if (currentCommand.getArguments().size() == parts.length - 1) {
-			List <String> arguments = new ArrayList<>();
-			//Omitting index 0 since its the command
+			List<String> arguments = new ArrayList<>();
+			// Omitting index 0 since its the command
 			for (int i = 1; i < parts.length; i++) {
 				arguments.add(parts[i]);
 			}
-			//replacing template arguments with actual ones
+			// replacing template arguments with actual ones
 			currentCommand.setArguments(arguments);
 			return true;
 		}
-			
+
 		return false;
 	}
 
@@ -98,14 +100,10 @@ public class Solution {
 			List<Command> commandList) {
 		// mkdir command
 		Command mkdir = assesment.new mkdirCommand();
-		mkdir.setCommandName("mkdir");
-		mkdir.setArguments(Arrays.asList(new String[] { "dirname" }));
 		commandList.add(mkdir);
 
 		// quit command
 		Command quit = assesment.new quitCommand();
-		quit.setCommandName("quit");
-		quit.setArguments(Arrays.asList(new String[] {}));
 		commandList.add(quit);
 
 		//
@@ -132,7 +130,7 @@ public class Solution {
 		private List<String> arguments;
 
 		public abstract void execute();
-		
+
 		public String getCommandName() {
 			return commandName;
 		}
@@ -148,11 +146,34 @@ public class Solution {
 		public void setArguments(List<String> arguments) {
 			this.arguments = arguments;
 		}
-		
+
+	}
+
+	class CommandFactory {
+
+		public Command getCommand(String command) {
+			if (command == null) {
+				return null;
+			}
+			if (command.equalsIgnoreCase("mkdir")) {
+				return new mkdirCommand();
+			} else if (command.equalsIgnoreCase("quit")) {
+				return new quitCommand();
+			}
+
+			return null;
+
+		}
+
 	}
 
 	class mkdirCommand extends Command {
-		
+
+		public mkdirCommand() {
+			setCommandName("mkdir");
+			setArguments(Arrays.asList(new String[] { "dirname" }));
+		}
+
 		public void execute() {
 			Directory newDirectory = new Directory();
 			newDirectory.setName(getArguments().get(0));
@@ -166,6 +187,11 @@ public class Solution {
 	}
 
 	class quitCommand extends Command {
+
+		public quitCommand() {
+			setCommandName("quit");
+			setArguments(Arrays.asList(new String[] {}));
+		}
 
 		public void execute() {
 			System.out.println("Exiting");
